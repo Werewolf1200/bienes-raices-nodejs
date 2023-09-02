@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Mi primer Proyecto de Node.js",
   "main": "index.js",
-  "type":"module",
+  "type": "module",
   "scripts": {
     "start": "node index.js",
     "server": "nodemon index.js"
@@ -18,7 +18,8 @@
   "author": "Saúl CM",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "pug": "^3.0.2"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
