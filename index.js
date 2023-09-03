@@ -8,6 +8,9 @@ const app = express();
 app.set('view engine', 'pug'); // Set - Agregar configuración
 app.set('views', './views');
 
+// Carpeta Publica
+app.use(express.static('public')); // Indicar los archivos estaticos a usar
+
 // Routing
 app.use('/', usuarioRoutes);
 
