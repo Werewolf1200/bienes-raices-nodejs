@@ -3,8 +3,10 @@ const formularioLogin = (req, res) => {
     });
 }
 
+// Primer parametro es la vista a renderizar, segundo parametro: Objeto con la vista
 const formularioRegistro = (req, res) => {
-    res.render('auth/registro', { 
+    res.render('auth/registro', {
+        pagina: 'Crear Cuenta'
     });
 }
 
