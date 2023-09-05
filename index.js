@@ -12,7 +12,7 @@ app.set('views', './views');
 app.use(express.static('public')); // Indicar los archivos estaticos a usar
 
 // Routing
-app.use('/', usuarioRoutes);
+app.use('/auth', usuarioRoutes);
 
 // Definir un puerto y arrancar el proyecto
 const port = 3000;
