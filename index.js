@@ -28,7 +28,7 @@ app.use(express.static('public')); // Indicar los archivos estaticos a usar
 app.use('/auth', usuarioRoutes);
 
 // Definir un puerto y arrancar el proyecto
-const port = 3000;
+const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`El Servidor está funcionando en el puerto ${port}`);
 }); 
