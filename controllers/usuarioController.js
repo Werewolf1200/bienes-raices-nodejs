@@ -12,7 +12,8 @@ const formularioLogin = (req, res) => {
 // Primer parametro es la vista a renderizar, segundo parametro: Objeto con la vista
 const formularioRegistro = (req, res) => {
     res.render('auth/registro', {
-        pagina: 'Crear Cuenta'
+        pagina: 'Crear Cuenta',
+        csrfToken: req.csrfToken()
     });
 }
 
@@ -33,6 +34,7 @@ const registrar = async (req, res) => {
         // Errores
         return res.render('auth/registro', {
             pagina: 'Crear Cuenta',
+            csrfToken: req.csrfToken(),
             errores: resultado.array(),
             usuario: { // Autollenado de campos validados
                 nombre: req.body.nombre,
@@ -49,6 +51,7 @@ const registrar = async (req, res) => {
     if (existeusuario) {
         return res.render('auth/registro', {
             pagina: 'Crear Cuenta',
+            csrfToken: req.csrfToken(),
             errores: [{msg: 'El usuario ya está registrado'}],
             usuario: {
                 nombre: req.body.nombre,
