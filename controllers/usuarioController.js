@@ -1,7 +1,7 @@
 import { check, validationResult } from "express-validator";
 import Usuario from "../models/Usuario.js";
 import { generarId } from "../helpers/tokens.js";
-import { emailRegistro } from "../helpers/emails.js";
+import { emailRegistro, emailOlvidePassword } from "../helpers/emails.js";
 
 const formularioLogin = (req, res) => {
     res.render('auth/login', { // Render -> Renderiza una vista
@@ -18,8 +18,6 @@ const formularioRegistro = (req, res) => {
 }
 
 const registrar = async (req, res) => {
-
-    console.log(req.body);
 
     // Validación
     await check('nombre').notEmpty().withMessage('El Nombre no puede ir vacio').run(req)
@@ -112,8 +110,65 @@ const confirmar = async (req, res) => {
 
 const formularioOlvidePassword = (req, res) => {
     res.render('auth/olvide-password', {
-        pagina: 'Recupera tu Acceso a Bienes Raices'
+        pagina: 'Recupera tu Acceso a Bienes Raices',
+        csrfToken: req.csrfToken()
     });
+}
+
+const resetPassword = async (req, res) => {
+// Validación
+    await check('email').isEmail().withMessage('Eso no parece un email').run(req)
+
+    let resultado = validationResult(req);
+
+    // Verificar que el resultado esté vacio
+    if (!resultado.isEmpty()) {
+        // Errores
+        return res.render('auth/olvide-password', {
+            pagina: 'Recupera tu Acceso a Bienes Raices',
+            csrfToken: req.csrfToken(),
+            errores: resultado.array()
+        });
+    }
+
+    // Buscar el usuario
+    const { email } = req.body;
+
+    const usuario = await Usuario.findOne({ where: { email } });
+
+    if (!usuario) {
+        return res.render('auth/olvide-password', {
+            pagina: 'Recupera tu Acceso a Bienes Raices',
+            csrfToken: req.csrfToken(),
+            errores: [{msg: 'El Email no pertenece a ni ningún usuario'}]
+        });
+    }
+
+    // Generar un token y enviar el email
+    usuario.token = generarId();
+    await usuario.save();
+
+    // Enviar un Email
+    emailOlvidePassword({
+        email: usuario.email,
+        nombre: usuario.nombre,
+        token: usuario.token
+    })
+
+    // Renderizar un mensaje
+    res.render('templates/mensaje', {
+        pagina: 'Reestablece tu Password',
+        mensaje: 'Hemos Enviado un Email con las instrucciones'
+    })
+}
+
+const comprobarToken = (req, res, next) => {
+    next();
+
+}
+
+const nuevoPassword = (req, res) => {
+    
 }
 
 export {
@@ -121,5 +176,8 @@ export {
     formularioRegistro,
     registrar,
     confirmar,
-    formularioOlvidePassword
+    formularioOlvidePassword,
+    resetPassword,
+    comprobarToken,
+    nuevoPassword
 }
