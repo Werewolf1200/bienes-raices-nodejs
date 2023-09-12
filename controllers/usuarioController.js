@@ -6,8 +6,57 @@ import { emailRegistro, emailOlvidePassword } from "../helpers/emails.js";
 
 const formularioLogin = (req, res) => {
     res.render('auth/login', { // Render -> Renderiza una vista
-        pagina: 'Iniciar Sesión'
+        pagina: 'Iniciar Sesión',
+        csrfToken: req.csrfToken()
     });
+}
+
+const autenticar = async (req, res) => {
+    // Validación
+    await check('email').isEmail().withMessage('El email es obligatorio').run(req)
+    await check('password').notEmpty().withMessage('El Password es obligatorio').run(req)
+
+    let resultado = validationResult(req);
+
+    // Verificar que el resultado esté vacio
+    if (!resultado.isEmpty()) {
+        // Errores
+        return res.render('auth/login', {
+            pagina: 'Iniciar Sesión',
+            csrfToken: req.csrfToken(),
+            errores: resultado.array()
+        });
+    }
+
+    const { email, password } = req.body;
+
+    // Comrpobar si el usuario existe
+    const usuario = await Usuario.findOne({ where: { email } });
+    if (!usuario) {
+        return res.render('auth/login', {
+            pagina: 'Iniciar Sesión',
+            csrfToken: req.csrfToken(),
+            errores: [{msg: 'El usuario no Existe'}]
+        });
+    }
+
+    // Comprobar si el usuario está confirmado
+    if (!usuario.confirmado) {
+        return res.render('auth/login', {
+            pagina: 'Iniciar Sesión',
+            csrfToken: req.csrfToken(),
+            errores: [{msg: 'Tu Cuenta no has sido Confirmada'}]
+        });
+    }
+
+    // Comprobar el password
+    if (!usuario.verificarPassword(password)) {
+        return res.render('auth/login', {
+            pagina: 'Iniciar Sesión',
+            csrfToken: req.csrfToken(),
+            errores: [{msg: 'El password es Incorrecto'}]
+        });
+    }
 }
 
 // Primer parametro es la vista a renderizar, segundo parametro: Objeto con la vista
@@ -220,6 +269,7 @@ const nuevoPassword = async (req, res) => {
 
 export {
     formularioLogin,
+    autenticar,
     formularioRegistro,
     registrar,
     confirmar,
