@@ -1,7 +1,7 @@
 import { check, validationResult } from "express-validator";
 import bcrypt from "bcrypt";
 import Usuario from "../models/Usuario.js";
-import { generarId } from "../helpers/tokens.js";
+import { generarId, generarJWT } from "../helpers/tokens.js";
 import { emailRegistro, emailOlvidePassword } from "../helpers/emails.js";
 
 const formularioLogin = (req, res) => {
@@ -57,6 +57,17 @@ const autenticar = async (req, res) => {
             errores: [{msg: 'El password es Incorrecto'}]
         });
     }
+
+    // Autenticar al usuario
+    const token = generarJWT({ id: usuario.id, nombre: usuario.nombre });
+    console.log(token);
+
+    // Almacenar Token en un cookie
+    return res.cookie('_token', token, {
+        httpOnly: true,
+        // secure:true, Necesitan un certificado SSL
+        //sameSite:true
+    }).redirect('/mis-propiedades')
 }
 
 // Primer parametro es la vista a renderizar, segundo parametro: Objeto con la vista
