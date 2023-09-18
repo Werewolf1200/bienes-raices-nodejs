@@ -1,7 +1,7 @@
 import { exit } from 'node:process';
 import categorias from './categorias.js';
-import Categoria from '../models/Categoria.js';
 import precios from './precios.js';
+import Categoria from '../models/Categoria.js';
 import Precio from '../models/Precio.js';
 import db from '../config/db.js';
 
