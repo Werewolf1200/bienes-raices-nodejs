@@ -1,5 +1,5 @@
 import { validationResult } from 'express-validator';
-import { Precio, Categoria, Propiedad } from '../models/Index.js';
+import { Precio, Categoria, Propiedad } from '../models/index.js';
 
 const admin = (req, res) => {
     res.render('propiedades/admin', {
@@ -52,6 +52,8 @@ const guardar = async (req, res) => {
 
     const { titulo, descripcion, habitaciones, estacionamiento, wc, calle, lat, lng, precio: precioId, categoria: categoriaId } = req.body;
 
+    const { id: usuarioId } = req.usuario;
+
     try {
         const propiedadGuardada = await Propiedad.create({
             titulo,
@@ -63,8 +65,15 @@ const guardar = async (req, res) => {
             lat,
             lng,
             precioId,
-            categoriaId
+            categoriaId,
+            usuarioId,
+            imagen: ''
         })
+
+        const { id } = propiedadGuardada;
+
+        res.redirect(`/propiedades/agregar-imagen/${id}`);
+        
     } catch (error) {
         console.log(error);
     }

@@ -1,12 +1,13 @@
 import express from "express";
 import { admin, crear, guardar } from '../controllers/propiedadController.js';
 import { body } from "express-validator";
+import protegerRuta from "../middleware/protegerRuta.js";
 
 const router = express.Router();
 
-router.get('/mis-propiedades', admin);
-router.get('/propiedades/crear', crear)
-router.post('/propiedades/crear',
+router.get('/mis-propiedades', protegerRuta, admin);
+router.get('/propiedades/crear', protegerRuta, crear)
+router.post('/propiedades/crear', protegerRuta,
     body('titulo').notEmpty().withMessage('El Titulo del Anuncio es Obligatorio'),
     body('descripcion')
         .notEmpty().withMessage('La Descripción no puede ir vacia')
