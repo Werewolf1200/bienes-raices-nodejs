@@ -14,5 +14,20 @@ Dropzone.options.imagen = {
     dictMaxFilesExceeded: 'El limite es 1 Archivo',
     headers: { // Se ejecuta al principio
         'CSRF-Token': token
+    },
+    paramName: 'imagen',
+    init: function () {
+        const dropzone = this;
+        const btnPublicar = document.querySelector('#publicar');
+
+        btnPublicar.addEventListener('click', function () {
+            dropzone.processQueue();
+        })
+
+        dropzone.on('queuecomplete', function () {
+            if (dropzone.getActiveFiles().length == 0) {
+                window.location.href = '/mis-propiedades';
+            }
+        })
     }
 }
