@@ -16,23 +16,43 @@ const admin = async (req, res) => {
       return res.redirect('/mis-propiedades?pagina=1')  
     };
 
-    const { id } = req.usuario;
+    try {
+        const { id } = req.usuario;
 
-    const propiedades = await Propiedad.findAll({
-        where: {
-            usuarioId : id
-        },
-        include: [
-            {model: Categoria, as: 'categoria'},
-            {model: Precio, as: 'precio'}
-        ]
-    })
+        // Limites y Offset para el paginador
+        const limit = 10;
+        const offset = ((paginaActual * limit) - limit)
 
-    res.render('propiedades/admin', {
-        pagina: 'Mis propiedades',
-        propiedades,
-        csrfToken: req.csrfToken(),
-    })
+        const [propiedades, total] = await Promise.all([
+            Propiedad.findAll({
+            limit,
+            offset,
+            where: {
+                usuarioId : id
+            },
+            include: [
+                {model: Categoria, as: 'categoria'},
+                {model: Precio, as: 'precio'}
+                ],
+            }),
+            Propiedad.count({
+                where: {
+                    usuarioId : id
+                }
+            })
+        ])
+        // const total = 100;
+        res.render('propiedades/admin', {
+            pagina: 'Mis propiedades',
+            propiedades,
+            csrfToken: req.csrfToken(),
+            paginas: Math.ceil(total / limit),
+            paginaActual
+        })
+        
+    } catch (error) {
+        console.log(error)
+    }
 }
 
 // Formulario para crear propiedades
