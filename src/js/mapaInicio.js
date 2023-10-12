@@ -46,6 +46,9 @@
 
     const mostrarPropiedades = propiedades => {
 
+        // Limpiar los Markers previos
+        markers.clearLayers();
+
         propiedades.forEach(propiedad => {
             // Agregar los Pines
             const marker = new L.marker([propiedad?.lat, propiedad?.lng], {
@@ -67,7 +70,7 @@
     const filtrarPropiedades = () => {
         const resultado = propiedades.filter(filtrarCategoria).filter(filtrarPrecio);
 
-        console.log(resultado)
+        mostrarPropiedades(resultado)
     }
 
     const filtrarCategoria = propiedad => filtros.categoria ? propiedad.categoriaId === filtros.categoria : propiedad;
