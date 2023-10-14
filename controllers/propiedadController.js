@@ -33,7 +33,8 @@ const admin = async (req, res) => {
             },
             include: [
                 {model: Categoria, as: 'categoria'},
-                {model: Precio, as: 'precio'}
+                {model: Precio, as: 'precio'},
+                {model: Mensaje, as: 'mensajes'}
                 ],
             }),
             Propiedad.count({
@@ -386,7 +387,38 @@ const enviarMensaje = async (req, res) => {
         esVendedor: esVendedor(req.usuario?.id, propiedad.usuarioId),
         enviado: true
     })
+
+    res.redirect('/')
 }
+
+//Leer mensajes recibidos
+const verMensajes = async (req, res) => {
+
+    //Validación
+    const { id } = req.params;
+
+    // Validar que la propiedad exista
+    const propiedad = await Propiedad.findByPk(id, {
+        include: [
+                {model: Mensaje, as: 'mensajes'}
+                ]
+    });
+
+    if (!propiedad) {
+        return res.redirect('/mis-propiedades');
+    }
+
+    // Revisar que Quien visita la URL, es quien creó la propiedad
+    if (propiedad.usuarioId.toString() !== req.usuario.id.toString()) {
+        return res.redirect('/mis-propiedades');
+    }
+
+    res.render('propiedades/mensajes', {
+        pagina: 'Mensajes',
+        mensajes: propiedad.mensajes
+    })
+}
+
 export {
     admin,
     crear,
@@ -397,5 +429,6 @@ export {
     guardarCambios,
     eliminar,
     mostrarPropiedad,
-    enviarMensaje
+    enviarMensaje,
+    verMensajes
 }
