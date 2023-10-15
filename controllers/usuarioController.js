@@ -70,6 +70,10 @@ const autenticar = async (req, res) => {
     }).redirect('/mis-propiedades')
 }
 
+const cerrarSesion = (req, res) => {
+    return res.clearCookie('_token').status(200).redirect('/auth/login')
+}
+
 // Primer parametro es la vista a renderizar, segundo parametro: Objeto con la vista
 const formularioRegistro = (req, res) => {
     res.render('auth/registro', {
@@ -281,6 +285,7 @@ const nuevoPassword = async (req, res) => {
 export {
     formularioLogin,
     autenticar,
+    cerrarSesion,
     formularioRegistro,
     registrar,
     confirmar,
